@@ -42,6 +42,7 @@
             <h4>Genres</h4>
             <h4>Genres</h4>
           </v-col>
+          <span> เวอร์ชัน: {packageJson["version"]}</span>
         </v-row>
       </span>
     </v-footer>
@@ -49,6 +50,8 @@
 </template>
 
 <script>
+import packageJson from "@/package.json";
+
 export default {
   name: "DefaultLayout",
   data() {
