@@ -14,10 +14,9 @@
         <v-col align="right">
           <v-select
             style="max-width: 400px"
-            v-model="value"
+            v-model="selectedGenres"
             :items="items"
             label="Genres"
-            multiple
             chips
           ></v-select>
         </v-col>
@@ -32,7 +31,7 @@
       >
         <v-hover>
           <v-card
-            class="mx-auto hover-shadow"
+            class="hover-shadow"
             height="520"
             max-width="350"
             @click="changeRoute(data)"
@@ -79,24 +78,29 @@
       </v-col>
     </v-row>
     <div class="container">
-      <v-pagination
-        v-model="currentPage"
-        :length="Math.ceil(filteredData / perPage)"
-        rounded="circle"
-        @input="changePage"
-      ></v-pagination>
+      <v-row style="margin-top: 0px" justify="center">
+        <v-pagination
+          v-model="currentPage"
+          :length="Math.ceil(filteredData / perPage)"
+          rounded="circle"
+          @input="changePage"
+        ></v-pagination>
+      </v-row>
+
+      <v-row style="margin-top: 80px">
+        <v-slide-group show-arrows>
+          <v-slide-group-item v-for="data in filteredData" :key="data.id">
+            <v-img @click="changeRoute(data)" :src="data.image.medium"></v-img>
+          </v-slide-group-item>
+        </v-slide-group>
+      </v-row>
     </div>
-    <v-sheet class="mx-auto" elevation="8" max-width="800">
-      <v-slide-group show-arrows>
-        <v-slide-group-item v-for="data in this.datas" :key="data.id">
-          <v-img @click="changeRoute(data)" :src="data.image.medium"></v-img>
-        </v-slide-group-item>
-      </v-slide-group>
-    </v-sheet>
   </div>
 </template>
 
 <script>
+import SlideGroup from "@/components/SlideGroup.vue";
+
 export default {
   name: "InspirePage",
   methods: {
@@ -123,6 +127,9 @@ export default {
       }
     },
   },
+  components: {
+    SlideGroup,
+  },
 
   data() {
     return {
@@ -131,8 +138,29 @@ export default {
       currentPage: 1,
       datas: [],
       searchQuery: "",
-      items: ["Action", "Adventure", "Anime", "buzz"],
-      value: ["foo", "Crime", "fizz", "buzz"],
+      items: [
+        "Action",
+        "Adventure",
+        "Anime",
+        "Crime",
+        "Comedy",
+        "Drama",
+        "Family",
+        "Fantasy",
+        "Horror",
+        "History",
+        "Legal",
+        "Music",
+        "Mystery",
+        "Medical",
+        "Romance",
+        "Sports",
+        "Science-Fiction",
+        "Supernatural",
+        "Thriller",
+        "War",
+      ],
+      selectedGenres: [],
     };
   },
   mounted() {
@@ -140,9 +168,15 @@ export default {
   },
   computed: {
     filteredData() {
-      return this.datas.filter((item) =>
-        item.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      return this.datas.filter((item) => {
+        const hasMatchingGenre = this.selectedGenres.length
+          ? item.genres.some((genre) => this.selectedGenres.includes(genre))
+          : true;
+        const matchesSearchQuery = item.name
+          .toLowerCase()
+          .includes(this.searchQuery.toLowerCase());
+        return hasMatchingGenre && matchesSearchQuery;
+      });
     },
   },
 };
